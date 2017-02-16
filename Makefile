@@ -1,11 +1,16 @@
 CC=gcc
 CFLAGS=-g -Wall
-SOURCES= main.c
+SOURCES=main.c
 ABBREVHASH=git rev-parse --short HEAD | tr -d "\n"
 GITSTATUS=./gitstatus.sh | tr -d "\n"
 HOST=$(shell hostname)
 EXECUTABLE=githashomatic
 
+ifeq ($(findstring bamboo,$(HOST)),bamboo)
+	BUILD_TYPE=bamboo
+else
+	BUILD_TYPE=workstation
+endif
 
 .PHONY : cleanall cleanobj cleanhash
 
@@ -24,18 +29,22 @@ cleanhash :
 	rm -f thehash.h
 
 .PHONY all: thehash.h
-	CC $(CFLAGS) -o $(EXECUTABLE) $(SOURCES) 
+	CC $(CFLAGS) -o $(EXECUTABLE) $(SOURCES)
 
 thehash.h:
 	@/bin/echo '#ifndef THE_HASH' > $@
 	@/bin/echo -n '#define THE_HASH "' >> $@
 	$(ABBREVHASH) >> $@ && \
 	echo '"\n#endif' >> $@
+
 	@/bin/echo '#ifndef GITSTATUS' >> $@
 	@/bin/echo -n '#define GITSTATUS "' >> $@
 	$(GITSTATUS) >> $@ && \
 	echo '"\n#endif' >> $@
+	
 	@/bin/echo '#ifndef HOST' >> $@
 	@/bin/echo -n '#define HOST "' >> $@
-	@/bin/echo -n $(HOST) >> $@
+	@/bin/echo -n $(BUILD_TYPE) >> $@
 	echo '"\n#endif' >> $@
+
+	#@echo "RESULT=${RESULT} , output=$(findstring yggdrasil,$(HOST))"
