@@ -1,12 +1,16 @@
 CC=gcc
 CFLAGS=-g -Wall
 SOURCES= main.c
-REVISION=git rev-parse --short HEAD | tr -d "\n"
+ABBREVHASH=git rev-parse --short HEAD | tr -d "\n"
+GITSTATUS=./gitstatus.sh | tr -d "\n"
+HOST=$(shell hostname)
 EXECUTABLE=githashomatic
 
 
-
 .PHONY : cleanall cleanobj cleanhash
+
+host :
+	@/bin/echo $(HOST)
 
 clean : cleanall
 
@@ -25,5 +29,13 @@ cleanhash :
 thehash.h:
 	@/bin/echo '#ifndef THE_HASH' > $@
 	@/bin/echo -n '#define THE_HASH "' >> $@
-	$(REVISION) >> $@ && \
+	$(ABBREVHASH) >> $@ && \
+	echo '"\n#endif' >> $@
+	@/bin/echo '#ifndef GITSTATUS' >> $@
+	@/bin/echo -n '#define GITSTATUS "' >> $@
+	$(GITSTATUS) >> $@ && \
+	echo '"\n#endif' >> $@
+	@/bin/echo '#ifndef HOST' >> $@
+	@/bin/echo -n '#define HOST "' >> $@
+	@/bin/echo -n $(HOST) >> $@
 	echo '"\n#endif' >> $@
