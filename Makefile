@@ -29,7 +29,7 @@ cleanhash :
 	rm -f thehash.h
 
 .PHONY all: thehash.h
-	CC $(CFLAGS) -o $(EXECUTABLE) $(SOURCES)
+	$(CC) $(CFLAGS) -o $(EXECUTABLE) $(SOURCES)
 
 thehash.h:
 	@/bin/echo '#ifndef THE_HASH' > $@
